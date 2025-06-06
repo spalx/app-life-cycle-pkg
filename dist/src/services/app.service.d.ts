@@ -1,11 +1,10 @@
-import { HookFunction, AppLifeCycleEvent, IAppPkg } from '../types/app';
+import { IAppPkg } from '../types/app';
 declare class AppService {
-    private hookFunctions;
+    private apps;
     constructor();
-    init(app: IAppPkg): Promise<void>;
-    hookOn(appLifeCycleEvent: AppLifeCycleEvent, hookFunction: HookFunction, prepend?: boolean): void;
+    use(app: IAppPkg): void;
     run(): Promise<void>;
-    private runHookFunctions;
+    private runLifeCycleFunctions;
     private registerSignalHandlers;
 }
 declare const _default: AppService;

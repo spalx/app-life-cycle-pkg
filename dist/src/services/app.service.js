@@ -40,23 +40,11 @@ const app_1 = require("../types/app");
 const INSTALL_FILE_PATH = path.resolve(__dirname, 'installed.txt');
 class AppService {
     constructor() {
-        this.hookFunctions = {
-            [app_1.AppLifeCycleEvent.Install]: [],
-            [app_1.AppLifeCycleEvent.Init]: [],
-            [app_1.AppLifeCycleEvent.Shutdown]: []
-        };
+        this.apps = [];
         this.registerSignalHandlers();
     }
-    async init(app) {
-        await app.init();
-    }
-    hookOn(appLifeCycleEvent, hookFunction, prepend = true) {
-        if (prepend) {
-            this.hookFunctions[appLifeCycleEvent].unshift(hookFunction);
-        }
-        else {
-            this.hookFunctions[appLifeCycleEvent].push(hookFunction);
-        }
+    use(app) {
+        this.apps.push(app);
     }
     async run() {
         let installed = false;
@@ -68,15 +56,25 @@ class AppService {
             installed = false;
         }
         if (!installed) {
-            await this.runHookFunctions(app_1.AppLifeCycleEvent.Install);
+            await this.runLifeCycleFunctions(app_1.AppLifeCycleEvent.Install);
             const fileContents = '1';
             await fs_1.promises.writeFile(INSTALL_FILE_PATH, fileContents);
         }
-        await this.runHookFunctions(app_1.AppLifeCycleEvent.Init);
+        await this.runLifeCycleFunctions(app_1.AppLifeCycleEvent.Init);
     }
-    async runHookFunctions(appLifeCycleEvent) {
-        for (const hookFunction of this.hookFunctions[appLifeCycleEvent]) {
-            await hookFunction();
+    async runLifeCycleFunctions(appLifeCycleEvent) {
+        for (const app of this.apps) {
+            switch (appLifeCycleEvent) {
+                case app_1.AppLifeCycleEvent.Install:
+                    await app.install?.();
+                    break;
+                case app_1.AppLifeCycleEvent.Init:
+                    await app.init?.();
+                    break;
+                case app_1.AppLifeCycleEvent.Shutdown:
+                    await app.shutdown?.();
+                    break;
+            }
         }
     }
     registerSignalHandlers() {
@@ -85,7 +83,7 @@ class AppService {
             process.on(signal, async () => {
                 common_loggers_pkg_1.logger.info(`Received ${signal}, shutting down...`);
                 try {
-                    await this.runHookFunctions(app_1.AppLifeCycleEvent.Shutdown);
+                    await this.runLifeCycleFunctions(app_1.AppLifeCycleEvent.Shutdown);
                 }
                 catch (error) {
                     common_loggers_pkg_1.logger.error('Error during shutdown', error);

@@ -1,5 +1,3 @@
-export type HookFunction = () => Promise<void>;
-
 export enum AppLifeCycleEvent {
   Install = 'Install',
   Init = 'Init',
@@ -7,5 +5,7 @@ export enum AppLifeCycleEvent {
 }
 
 export interface IAppPkg {
-  init(): Promise<void>;
+  init?(): Promise<void>;
+  install?(): Promise<void>;
+  shutdown?(): Promise<void>;
 }
