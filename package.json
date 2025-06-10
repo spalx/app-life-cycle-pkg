@@ -7,7 +7,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "common-loggers-pkg": "git+git@github.com:spalx/common-loggers-pkg.git#1.0.0"
