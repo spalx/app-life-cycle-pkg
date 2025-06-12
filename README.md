@@ -10,9 +10,12 @@ Instance of `AppService` used for registering classes to the app life cycle and 
 
 ### AppService methods
 
+NOTE: call the following methods only inside your project's root file (for example: index.ts).
+
 | Method | Argument Types | Returns | Description |
 | - | - | - | - |
 | `use(app)` | `app: IAppPkg` | `void` | Register an IAppPkg subclass instance to the app life cycle |
+| `run(app)` | | `void` | Run the app service |
 
 ### Usage example
 
@@ -20,6 +23,7 @@ How to run the app-life-cycle-pkg in your app root file (index.ts for example):
 
 ```ts
 import { appService } from 'app-life-cycle-pkg';
+import { kafkaService } from 'kafka-pkg';
 // More imports here
 
 import app from './app';
@@ -45,6 +49,9 @@ startServer();
 And this is how app.ts file looks like:
 
 ```ts
+import { IAppPkg } from 'app-life-cycle-pkg';
+import { kafkaService } from 'kafka-pkg';
+
 class App implements IAppPkg {
   async init(): Promise<void> {
     await kafkaService.createTopics([
