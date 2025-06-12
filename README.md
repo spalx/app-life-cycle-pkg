@@ -4,6 +4,12 @@ Package which enables to register functions to app lifecycle events like install
 
 ---
 
+## Dependencies
+
+This package depends on the following package:
+
+[common-loggers-pkg](https://github.com/spalx/common-loggers-pkg)
+
 ## appService
 
 Instance of `AppService` used for registering classes to the app life cycle and for running the app during initialization.
