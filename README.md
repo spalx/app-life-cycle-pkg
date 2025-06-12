@@ -14,7 +14,7 @@ This package depends on the following package:
 
 Instance of `AppService` used for registering classes to the app life cycle and for running the app during initialization.
 
-### AppService methods
+### appService methods
 
 NOTE: call the following methods only inside your project's root file (for example: index.ts).
 
