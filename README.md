@@ -1,31 +1,85 @@
-# app-hook-pkg
+# app-life-cycle-pkg
 
-Package which enables to hook functions to the app lifecycle events like install, init or shutdown.
+Package which enables to register functions to app lifecycle events like install, init or shutdown.
 
 ---
 
-## AppHook Service
+## appService
 
-Instance of `AppHookService` used for registering hook functions.
+Instance of `AppService` used for registering classes to the app life cycle and for running the app during initialization.
 
-### AppHookService methods
+### AppService methods
 
 | Method | Argument Types | Returns | Description |
 | - | - | - | - |
-| `hookOn(appCycleEvent, hookFunction, prepend)` | `appCycleEvent: AppCycleEvent`,<br>`hookFunction: () => Promise<void>`<br>`prepend: boolean = true` | `void` | Hook a function to an app cycle event |
+| `use(app)` | `app: IAppPkg` | `void` | Register an IAppPkg subclass instance to the app life cycle |
 
-## AppCycleEvent enum options
+### Usage example
+
+How to run the app-life-cycle-pkg in your app root file (index.ts for example):
+
+```ts
+import { appService } from 'app-life-cycle-pkg';
+// More imports here
+
+import app from './app';
+
+async function startServer(): Promise<void> {
+  try {
+    // Other code
+
+    appService.use(app);
+    appService.use(kafkaService); // Using other apps from other packages
+
+    await appService.run();
+
+    // Other code
+  } catch (error) {
+    process.exit(1);
+  }
+}
+
+startServer();
+```
+
+And this is how app.ts file looks like:
+
+```ts
+class App implements IAppPkg {
+  async init(): Promise<void> {
+    await kafkaService.createTopics([
+      // Create kafka topics here
+    ]);
+
+    await kafkaService.subscribe({
+      // Subscribe to kafka topics here
+    });
+  }
+
+  async install(): Promise<void> {
+  	// This will be called only during install
+  }
+
+  async shutdown(): Promise<void> {
+    // Graceful shutdown: cleanup anything you want here
+  }
+}
+
+export default new App();
+```
+
+## IAppPkg interface functions
 
 | Name | Description |
 | - | - |
-| Install | Runs when app is installed for the first time |
-| Init | Runs every time the app runs/restarts |
-| Shutdown | Runs when any of the app termination signals ('SIGINT', 'SIGTERM', 'SIGUSR2') is received |
+| init | Runs every time the app runs/restarts |
+| install | Runs when app is installed for the first time |
+| shutdown | Runs when any of the app termination signals ('SIGINT', 'SIGTERM', 'SIGUSR2') is received |
 
 ---
 
 ## Imports
 
 ```ts
-import { appHookService, AppCycleEvent } from 'app-hook-pkg';
+import { appService, IAppPkg } from 'app-life-cycle-pkg';
 ```
