@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { logger } from 'common-loggers-pkg';
 
-import { AppLifeCycleEvent, IAppPkg } from '@/types/app';
+import { AppLifeCycleEvent, IAppPkg } from '../types/app';
 
 const INSTALL_FILE_PATH = path.resolve(__dirname, 'installed.txt');
 
