@@ -29,7 +29,7 @@ How to run the app-life-cycle-pkg in your app root file (index.ts for example):
 
 ```ts
 import { appService } from 'app-life-cycle-pkg';
-import { kafkaService } from 'kafka-pkg';
+import { someService } from 'some-pkg';
 // More imports here
 
 import app from './app';
@@ -39,7 +39,7 @@ async function startServer(): Promise<void> {
     // Other code
 
     appService.use(app);
-    appService.use(kafkaService); // Using other apps from other packages
+    appService.use(someService); // Using other apps from other packages
 
     await appService.run();
 
@@ -56,17 +56,10 @@ And this is how app.ts file looks like:
 
 ```ts
 import { IAppPkg } from 'app-life-cycle-pkg';
-import { kafkaService } from 'kafka-pkg';
 
 class App implements IAppPkg {
   async init(): Promise<void> {
-    await kafkaService.createTopics([
-      // Create kafka topics here
-    ]);
-
-    await kafkaService.subscribe({
-      // Subscribe to kafka topics here
-    });
+    // This will be called on every app run
   }
 
   async install(): Promise<void> {
@@ -75,6 +68,14 @@ class App implements IAppPkg {
 
   async shutdown(): Promise<void> {
     // Graceful shutdown: cleanup anything you want here
+  }
+
+  used(): void {
+    // Do something here, maybe chain other use() calls
+  }
+
+  getPriority(): number {
+    return 0; // 0 means highest priority
   }
 }
 
@@ -88,6 +89,8 @@ export default new App();
 | init | Runs every time the app runs/restarts |
 | install | Runs when app is installed for the first time |
 | shutdown | Runs when any of the app termination signals ('SIGINT', 'SIGTERM', 'SIGUSR2') is received |
+| used | Gets called immediately after the app is given to use() function |
+| getPriority | Returns the priority of the app initialization. The lowest the number, the highest the priority |
 
 ---
 
