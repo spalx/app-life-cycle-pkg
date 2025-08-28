@@ -1,6 +1,6 @@
 # app-life-cycle-pkg
 
-Package which enables to register functions to app lifecycle events like install, init or shutdown.
+Package which enables to register functions to app lifecycle events like init or shutdown.
 
 ---
 
@@ -62,10 +62,6 @@ class App implements IAppPkg {
     // This will be called on every app run
   }
 
-  async install(): Promise<void> {
-  	// This will be called only during install
-  }
-
   async shutdown(): Promise<void> {
     // Graceful shutdown: cleanup anything you want here
   }
@@ -87,7 +83,6 @@ export default new App();
 | Name | Description |
 | - | - |
 | init | Runs every time the app runs/restarts |
-| install | Runs when app is installed for the first time |
 | shutdown | Runs when any of the app termination signals ('SIGINT', 'SIGTERM', 'SIGUSR2') is received |
 | used | Gets called immediately after the app is given to use() function |
 | getPriority | Returns the priority of the app initialization. The lowest the number, the highest the priority |

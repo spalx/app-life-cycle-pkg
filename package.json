@@ -1,13 +1,13 @@
 {
   "name": "app-life-cycle-pkg",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"
   },
   "dependencies": {
-    "common-loggers-pkg": "git+git@github.com:spalx/common-loggers-pkg.git#1.0.1"
+    "common-loggers-pkg": "git+git@github.com:spalx/common-loggers-pkg.git#1.0.3"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",

@@ -1,5 +1,4 @@
 export enum AppLifeCycleEvent {
-  Install = 'Install',
   Init = 'Init',
   Shutdown = 'Shutdown'
 }
@@ -14,7 +13,6 @@ export enum AppRunPriority {
 
 export interface IAppPkg {
   init?(): Promise<void>;
-  install?(): Promise<void>;
   shutdown?(): Promise<void>;
   used?(): void;
   getPriority?(): number;

@@ -1,10 +1,6 @@
-import { promises as fs } from 'fs';
-import * as path from 'path';
 import { logger } from 'common-loggers-pkg';
 
 import { AppLifeCycleEvent, AppRunPriority, IAppPkg } from '../types/app';
-
-const INSTALL_FILE_PATH = path.resolve(__dirname, 'installed.txt');
 
 interface IPrioritizedApp {
   app: IAppPkg;
@@ -25,22 +21,6 @@ class AppService {
   }
 
   async run(): Promise<void> {
-    let installed = false;
-
-    try {
-      await fs.access(INSTALL_FILE_PATH);
-      installed = true;
-    } catch (err) {
-      installed = false;
-    }
-
-    if (!installed) {
-      await this.runLifeCycleFunctions(AppLifeCycleEvent.Install);
-
-      const fileContents = '1';
-      await fs.writeFile(INSTALL_FILE_PATH, fileContents);
-    }
-
     await this.runLifeCycleFunctions(AppLifeCycleEvent.Init);
   }
 
@@ -50,9 +30,6 @@ class AppService {
     for (const prioritizedApp of this.apps) {
       const app: IAppPkg = prioritizedApp.app;
       switch (appLifeCycleEvent) {
-        case AppLifeCycleEvent.Install:
-          await app.install?.();
-          break;
         case AppLifeCycleEvent.Init:
           await app.init?.();
           break;
