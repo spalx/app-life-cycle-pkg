@@ -8,26 +8,36 @@ interface IPrioritizedApp {
 }
 
 class AppService {
-  private apps: IPrioritizedApp[] = [];
+  private apps: Map<string, IPrioritizedApp> = new Map<string, IPrioritizedApp>();
 
   constructor() {
     this.registerSignalHandlers();
   }
 
-  use(app: IAppPkg): void {
-    const priority: number = app.getPriority?.() || AppRunPriority.Highest;
-    this.apps.push({ app, priority });
-    app.used?.();
-  }
-
-  async run(): Promise<void> {
+  async run(app: IAppPkg): Promise<void> {
+    await this.initDependencies(app);
     await this.runLifeCycleFunctions(AppLifeCycleEvent.Init);
   }
 
-  private async runLifeCycleFunctions(appLifeCycleEvent: AppLifeCycleEvent): Promise<void> {
-    this.apps.sort((a, b) => a.priority - b.priority);
+  private initDependencies(app: IAppPkg): void {
+    const dependencies: IAppPkg[] = app.getDependencies?.() ?? [];
+    for (const dependency of dependencies) {
+      const appName: string = dependency.getName();
 
-    for (const prioritizedApp of this.apps) {
+      if (this.apps.has(appName)) {
+        continue;
+      }
+
+      const priority: number = dependency.getPriority?.() || AppRunPriority.Highest;
+      this.apps.set(appName, { app: dependency, priority });
+      this.initDependencies(dependency);
+    }
+  }
+
+  private async runLifeCycleFunctions(appLifeCycleEvent: AppLifeCycleEvent): Promise<void> {
+    const apps: IPrioritizedApp[] =  Array.from(this.apps.values()).sort((a, b) => a.priority - b.priority);
+
+    for (const prioritizedApp of apps) {
       const app: IAppPkg = prioritizedApp.app;
       switch (appLifeCycleEvent) {
         case AppLifeCycleEvent.Init:

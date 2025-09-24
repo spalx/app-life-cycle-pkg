@@ -14,6 +14,7 @@ export enum AppRunPriority {
 export interface IAppPkg {
   init?(): Promise<void>;
   shutdown?(): Promise<void>;
-  used?(): void;
+  getName(): string;
   getPriority?(): number;
+  getDependencies?(): IAppPkg[];
 }
