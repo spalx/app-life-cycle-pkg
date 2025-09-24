@@ -15,21 +15,20 @@ class AppService {
   }
 
   async run(app: IAppPkg): Promise<void> {
-    await this.initDependencies(app);
+    this.initDependencies(app);
     await this.runLifeCycleFunctions(AppLifeCycleEvent.Init);
   }
 
   private initDependencies(app: IAppPkg): void {
+    const appName: string = app.getName();
+
+    if (!this.apps.has(appName)) {
+      const priority: number = app.getPriority?.() || AppRunPriority.Highest;
+      this.apps.set(appName, { app, priority });
+    }
+
     const dependencies: IAppPkg[] = app.getDependencies?.() ?? [];
     for (const dependency of dependencies) {
-      const appName: string = dependency.getName();
-
-      if (this.apps.has(appName)) {
-        continue;
-      }
-
-      const priority: number = dependency.getPriority?.() || AppRunPriority.Highest;
-      this.apps.set(appName, { app: dependency, priority });
       this.initDependencies(dependency);
     }
   }
