@@ -50,26 +50,23 @@ class AppService {
   }
 
   private registerSignalHandlers(): void {
-    const signals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGUSR2'];
+    const signals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM'];
     let shuttingDown = false;
 
     const shutdown = async (signal: NodeJS.Signals) => {
-      if (shuttingDown) {
-        logger.warn(`Already shutting down, ignoring ${signal}`);
-        return;
-      }
-
+      if (shuttingDown) return;
       shuttingDown = true;
+
       logger.info(`Received ${signal}, shutting down...`);
 
       try {
-        await this.runLifeCycleFunctions(AppLifeCycleEvent.Shutdown);
-      } catch (error) {
-        logger.error('Error during shutdown', error);
+        await runLifeCycleFunctions(AppLifeCycleEvent.Shutdown);
+      } catch (e) {
+        logger.error(e);
+      } finally {
+        logger.info('Shutdown complete.');
+        process.exit(0);
       }
-
-      logger.info('Shutdown complete.');
-      process.exitCode = 0;
     };
 
     signals.forEach(signal => {
