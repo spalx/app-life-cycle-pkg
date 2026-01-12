@@ -63,19 +63,13 @@ class AppService {
       logger.info(`Received ${signal}, shutting down...`);
 
       try {
-        await Promise.race([
-          this.runLifeCycleFunctions(AppLifeCycleEvent.Shutdown),
-          new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Shutdown timeout')), 10000)
-          )
-        ]);
+        await this.runLifeCycleFunctions(AppLifeCycleEvent.Shutdown);
       } catch (error) {
         logger.error('Error during shutdown', error);
-      } finally {
-        logger.info('Shutdown complete.');
-        // Allow event loop to drain naturally
-        process.exitCode = 0;
       }
+
+      logger.info('Shutdown complete.');
+      process.exitCode = 0;
     };
 
     signals.forEach(signal => {
