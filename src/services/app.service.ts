@@ -60,7 +60,7 @@ class AppService {
       logger.info(`Received ${signal}, shutting down...`);
 
       try {
-        await runLifeCycleFunctions(AppLifeCycleEvent.Shutdown);
+        await this.runLifeCycleFunctions(AppLifeCycleEvent.Shutdown);
       } catch (e) {
         logger.error(e);
       } finally {
