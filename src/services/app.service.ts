@@ -1,4 +1,4 @@
-import { logger } from 'common-loggers-pkg';
+import { logger } from '@spalx/common-loggers-pkg';
 
 import { AppLifeCycleEvent, AppRunPriority, IAppPkg } from '../types/app';
 

@@ -1,5 +1,5 @@
 {
-  "name": "app-life-cycle-pkg",
+  "name": "@spalx/app-life-cycle-pkg",
   "version": "1.0.8",
   "main": "dist/index.js",
   "scripts": {
@@ -7,7 +7,7 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "common-loggers-pkg": "git+git@github.com:spalx/common-loggers-pkg.git#1.0.4"
+    "@spalx/common-loggers-pkg": "^1.0.5"
   },
   "devDependencies": {
     "@types/node": "^25.9.2",
