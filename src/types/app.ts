@@ -17,4 +17,6 @@ export interface IAppPkg {
   getName(): string;
   getPriority?(): number;
   getDependencies?(): IAppPkg[];
+  getExtraEntities?(): string[];
+  getExtraMigrations?(): string[];
 }

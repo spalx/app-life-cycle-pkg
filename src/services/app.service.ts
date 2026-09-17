@@ -19,6 +19,40 @@ class AppService {
     await this.runLifeCycleFunctions(AppLifeCycleEvent.Init);
   }
 
+  getExtraEntities(): string[] {
+    const apps: IAppPkg[] = this.getPrioritizedApps();
+    const entities: string[] = [];
+
+    for (const app of apps) {
+      const appEntities = app.getExtraEntities?.();
+
+      if (appEntities?.length) {
+        entities.push(...appEntities);
+      }
+    }
+
+    return entities;
+  }
+
+  getExtraMigrations(): string[] {
+    const apps: IAppPkg[] = this.getPrioritizedApps();
+    const migrations: string[] = [];
+
+    for (const app of apps) {
+      const appMigrations = app.getExtraMigrations?.();
+
+      if (appMigrations?.length) {
+        migrations.push(...appMigrations);
+      }
+    }
+
+    return migrations;
+  }
+
+  private getPrioritizedApps(): IAppPkg[] {
+    return Array.from(this.apps.values()).sort((a, b) => a.priority - b.priority).map(item => item.app);
+  }
+
   private initDependencies(app: IAppPkg): void {
     const appName: string = app.getName();
 
@@ -34,10 +68,9 @@ class AppService {
   }
 
   private async runLifeCycleFunctions(appLifeCycleEvent: AppLifeCycleEvent): Promise<void> {
-    const apps: IPrioritizedApp[] =  Array.from(this.apps.values()).sort((a, b) => a.priority - b.priority);
+    const apps: IAppPkg[] = this.getPrioritizedApps();
 
-    for (const prioritizedApp of apps) {
-      const app: IAppPkg = prioritizedApp.app;
+    for (const app of apps) {
       switch (appLifeCycleEvent) {
         case AppLifeCycleEvent.Init:
           await app.init?.();
